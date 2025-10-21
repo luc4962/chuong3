@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Trực Tiếp: Chấn Thương Trong TDTT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+            transition: border 0.3s;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 1.1em;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+            pointer-events: none; /* Vô hiệu hóa click trực tiếp vào radio button */
+        }
+        /* Phân loại màu cho kết quả */
+        .correct {
+            background-color: #e6ffe6 !important; /* Xanh nhạt */
+            border: 1px solid #4CAF50 !important;
+        }
+        .incorrect {
+            background-color: #ffe6e6 !important; /* Đỏ nhạt */
+            border: 1px solid #f44336 !important;
+        }
+        .result-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none; 
+        }
+        .result-message.correct-text {
+            color: #4CAF50;
+        }
+        .result-message.incorrect-text {
+            color: #f44336;
+        }
+        .correct-answer-display {
+            font-size: 0.9em;
+            color: #1a7e20;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+        #score {
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            background-color: #eaf6ff;
+        }
+        .disabled-block label {
+            cursor: default;
+            opacity: 0.8;
+            pointer-events: none; /* Không cho phép click sau khi đã trả lời */
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        #reset-button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #reset-button:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>CHƯƠNG 3: CHẤN THƯƠNG TRONG HOẠT ĐỘNG THỂ DỤC THỂ THAO</h1>
+    <p> * Lưu ý: Tích chọn đáp án sẽ hiển thị kết quả đúng/sai ngay lập tức. </p>
+    <form id="quiz-form">
+        </form>
+    
+    <div id="score"></div>
+    
+    <div class="action-buttons">
+        <button id="reset-button">🔄 Làm lại Bài (Reset)</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi từ file .docx đã cung cấp
+    const quizData = [
+        { q: "Chấn thương trong TDTT là gì?", a: "A", options: { A: "Chấn thương trong TDTT là những tổn thương về thực thể và chức năng do tập luyện và thi đấu TDTT.", B: "Chấn thương trong TDTT là những mệt mỏi của người tập khi tham gia tập luyện TDTT.", C: "Chấn thương trong TDTT là những vết xước, chảy máu và gãy xương.", D: "Chấn thương trong TDTT là những tổn thương hệ vận động trong cơ thể." } },
+        { q: "Nguyên nhân nào chiếm chủ yếu từ 30% - 60% các ca chấn thương trong TDTT?", a: "A", options: { A: "Các bài tập không đảm bảo theo các nguyên tắc tập luyện.", B: "Do sai lầm trong phương pháp giảng dạy của huấn luyện viên hoặc giáo viên.", C: "Do các thiếu sót trong việc tổ chức tập luyện và thi đấu.", D: "Do khởi động không không kỹ trước khi tập luyện" } },
+        { q: "Các tác nhân bên ngoài gây ra chấn thương trong TDTT là gì?", a: "C", options: { A: "Do tuân thủ những yêu cầu về y tế và doo khởi động không kỹ và các bài tập không đảm bảo theo các nguyên tắc tập luyện.", B: "Do đảm bảo yêu cầu về điều kiện khí hậu và điều kiện vệ sinh; Do các hành vi đúng đắn của bản thân vận động viên.", C: "Do sai lầm trong phương pháp giảng dạy của huấn luyện viên hoặc giáo viên; Các bài tập không đảm bảo theo các nguyên tắc tập luyện; Do các thiếu sót trong việc tổ chức tập luyện và thi đấu; Do không đáp ứng đầy đủ các yêu cầu về vật chất, kỹ thuật trong tập luyện.", D: "Do không khởi động kỹ làm linh hoạt các khớp và làm nóng hệ vận động trước khi tập luyện." } },
+        { q: "Các tác nhân bên trong gây ra chấn thương trong TDTT là gì?", a: "A", options: { A: "Người tập mệt mỏi, mệt mỏi quá độ; Người tập đi tập lại sau 1 thời gian dài nghỉ tập; Cấu trúc giải phẫu của người tập không phù hợp với kỹ thuật bài tập.", B: "Người tập không khởi động kỹ trước khi tập luyện.", C: "Do không đảm bảo yêu cầu về điều kiện khí hậu và điều kiện vệ sinh.", D: "Các bài tập không đảm bảo theo các nguyên tắc tập luyện." } },
+        { q: "Khi người tập mệt mỏi quá độ sẽ dẫn tới điều gì khiến họ dễ bị chấn thương?", a: "B", options: { A: "Không tập trung vào quá trình tập luyện..", B: "Rối loạn về khả năng định hình trong không gian và sự giảm sút của các phản ứng bảo vệ và sức tập trung chú ý của vận động viên.", C: "Các lực cơ giảm, tốc độ phản xạ chậm.", D: "Các cơ bị thả lỏng và giảm sút các phản ứng bảo vệ của vận động viên." } },
+        { q: "Nghỉ tập thời gian dài sau đó tập luyện trở lại sẽ dẫn tới điều gì dễ gây chấn thương cho người tập?", a: "A", options: { A: "Các chức năng trong cơ thể thường giảm sút, lực cơ giảm, tốc độ phản xạ chậm.", B: "Mất đi cảm giác về không gian và thời gian.", C: "Lực cơ bị giảm và tốc độ phản xạ chậm.", D: "Các khớp không được linh hoạt." } },
+        { q: "Nguyên nhân của chấn thương riêng biệt mang tính nghề nghiệp là gì?", a: "C", options: { A: "Do người tập không khởi động kỹ trước khi tập luyện.", B: "Do người tập không tuân thủ các quy tắc an toàn trong tập luyện.", C: "Do cấu trúc giải phẫu của cơ thể không phù hợp với yêu cầu kỹ thuật.", D: "Do khả năng chịu đựng khối lượng vận động lớn của vận động viên." } },
+        { q: "Dựa vào đâu để phân loại chấn thương trong tập luyện TDTT ?", a: "B", options: { A: "Dựa vào thực thể tổn thương và thời gian tổn thương, vị trí chấn thương.", B: "Dựa vào mức độ tổn thương, ảnh hưởng của chúng đến kế hoạch huấn luyện thi đấu và vị trí các bộ phận bị tổn thương.", C: "Dựa vào mức độ tổn thương, ảnh hưởng của chúng đến kế hoạch huấn luyện thi đấu và vị trí các bộ phận bị tổn thương và vào thực thể tổn thương và thời gian tổn thương, vị trí chấn thương.", D: "Dựa vào tính chất của các bài tập cũng như khối lượng vận động khi áp dụng cho người tập." } },
+        { q: "Căn cứ vào thực thể tổn thương, người ta chia chấn thương thành 2 loại là gì?", a: "A", options: { A: "Tổn thương phần cứng và mềm.", B: "Tổn thương bên trong và ngoài.", C: "Tổn thương cơ và xương.", D: "Tổn thương dây chằng và các cơ." } },
+        { q: "Căn cứ vào thời gian tổn thương, người ta chia chấn thương thành 2 loại là gì?", a: "C", options: { A: "Giai đoạn đầu và sau", B: "Giai đoạn cấp tính và trung tính.", C: "Giai đoạn cấp tính và hồi phục.", D: "Giai đoạn đầu và trung bình." } },
+        { q: "Phản ứng của giai đoạn cấp tính sau khi bị chấn thương là gì?", a: "B", options: { A: "Đau mỏi vùng bị chấn thương.", B: "Xuất hiện các phản ứng như sưng, nóng, đỏ đau ở vùng chấn thương.", C: "Vùng chấn thương đã bắt đầu phục hồi.", D: "Xuất hiện các phản ứng như tấy đỏ, sưng và không cử động được." } },
+        { q: "Giai đoạn hồi phục của chấn thương thường diễn ra ở thời gian nào sau chấn thương?", a: "C", options: { A: "Sau 24h.", B: "Sau 36h.", C: "Sau 48h.", D: "Sau 12h." } },
+        { q: "Căn cứ vào mức độ tổn thương và ảnh hưởng của chúng đến kế hoạch huấn luyện thi đấu người ta chia chấn thương thành những loại nào?", a: "B", options: { A: "Loại nhỏ và lớn.", B: "Loại nhẹ, loại trung bình và loại nặng.", C: "Loại nhẹ và nặng.", D: "Loại bình thường và cấp tính." } },
+        { q: "Đặc điểm của chấn thương loại nhẹ là gì?", a: "A", options: { A: "Không làm ảnh hưởng đến kế hoạch huấn luyện, không gây nên những rối loạn lớn trong cơ thể, không làm mất đi năng lực vận động.", B: "Là những chấn thương gây nên những biến đổi nhỏ trong cơ thể.", C: "Ảnh hưởng nghiêm trọng đến tình trạng sức khoẻ của vận động viên.", D: "Làm hạn chế một phần hoăc hoàn toàn quá trình di chuyển của vận động viên." } },
+        { q: "Những chấn thương gây nên những biến đổi nhỏ trong cơ thể đồng thời làm mất tạm thời năng lực vận động và năng lực hoạt động thể thao thuộc loại chấn thương nào?", a: "B", options: { A: "Loại nhẹ.", B: "Loại trung bình.", C: "Loại nặng.", D: "Loại cấp tính." } },
+        { q: "Những chấn thương gây nên những biến đổi lớn trong cơ thể, ảnh hưởng nghiêm trọng đến tình trạng sức khoẻ của vận động viên thuộc loại chấn thương nào?", a: "A", options: { A: "Loại nặng.", B: "Loại nhẹ.", C: "Loại trung bình.", D: "Loại cấp tính ." } },
+        { q: "Căn cứ vào vị trí chấn thương người ta chia chấn thương thành các loại nào?", a: "A", options: { A: "Chấn thương kín và hở.", B: "Chấn thương trên và dưới.", C: "Chấn thương trong và ngoài.", D: "Chấn thương nặng và nhẹ ." } },
+        { q: "Vùng bị thương, da vẫn còn nguyên vẹn không có miệng vết thương thông với bên ngoài thì được gọi là?", a: "C", options: { A: "Chấn thương hở.", B: "Chấn thương bên trong.", C: "Chấn thương kín.", D: "Chấn thương phần cứng." } },
+        { q: "Chấn thương da, chấn thương cơ- gân cơ, chấn thương khớp, xương, sụn và thần kinh mạch máu được gọi là chấn thương gì?", a: "C", options: { A: "Chân thương bên trong ( nội thương).", B: "Chấn thương phần bụng.", C: "Chấn thương ngoài ( ngoại thương).", D: "Chấn thương hở." } },
+        { q: "Căn cứ vị trí các bộ phận bị chấn thương người ta chia chấn thương thành các loại nào?", a: "A", options: { A: "Chấn thương ngoài, chấn thương trong và chấn thương bụng", B: "Chấn thương ngoài và trong.", C: "Chấn thương bụng và ngực.", D: "Chấn thương phần cứng và mềm." } },
+        { q: "Các cơ chế gây ra chấn thương trong TDTT là gì?", a: "A", options: { A: "Do sự va đập và chủ yếu là do vận động viên bị ngã xuống đất, xuống sàn, xuống nước... hoặc do đối phương gây ra hay do va đập với dụng cụ tập luyện; Do hoạt động vượt quá biên độ cho phép.", B: "Theo cơ chế kéo căng hay đè nén do vận động viên phải di chuyển vật nặng.", C: "Do vận động viên bị ngã xuống đất, xuống sàn, xuống nước... hoặc do đối phương gây ra hay do va đập với dụng cụ tập luyện.", D: "Do không khởi động kỹ trước khi tập luyện và áp dụng các bài tập khó so với khả năng của cơ thể." } },
+        { q: "Nguyên nhân dẫn tới người tập vận động vượt quá biên độ cho phép dẫn đến chấn thương là gì?", a: "A", options: { A: "Do người tập gấp duỗi đột ngột và mạnh ở khớp; do người tập phải di chuyển vật nặng (nâng tạ, nâng đồng đội hoặc đối thủ khi tập luyện và thi đấu).", B: "Do người tập không khởi động kỹ các khớp và làm nóng các cơ.", C: "Do người tập thiếu sự tập trung trong tập luyện.", D: "Do người tập không tập trung thực hiện động tác khi tham gia tập luyện." } },
+        { q: "Phương pháp nào không phải dùng để phòng tránh chấn thương trong những phương pháp dưới đây?", a: "A", options: { A: "Ngủ đủ 8 tiếng mỗi ngày.", B: "Kiểm tra sức khỏe thường xuyên, chẩn đoán, điều trị các loại chấn thương và các bệnh thông thường, xác định loại trừ các yếu tố nguy cơ gây ra chấn thương.", C: "Sắp xếp hợp lý quá trình giảng dạy và thi đấu, khi sắp xếp huấn luyện viên cần căn cứ vào tuổi giới tính, tình trạng sức khỏe, trình độ kỹ thuật của VĐV để sắp xếp nội dung và phương pháp giảng dạy phù hợp.", D: "Chú ý đến độ tuổi giới tính, tình trạng sức khỏe, trình độ kỹ thuật của VĐV để sắp xếp nội dung và phương pháp giảng dạy phù hợp." } },
+        { q: "Người hướng dẫn tập luyện TDTT cần căn cứ những điều gì của người tập để đưa ra bài tập, chương trình học hợp lý không dẫn đến chấn thương cho người tập?", a: "C", options: { A: "Tình trạng sức khỏe, trình độ kỹ thuật của người tập.", B: "Tuổi, giới tính của người tập.", C: "Tuổi, giới tính, tình trạng sức khỏe, trình độ kỹ thuật của người tập.", D: "Căn cứ vào số năm tập luyện và trình độ chuyên môn của người tập." } },
+        { q: "Đề phòng tránh chấn thương, người tập cần hiểu rõ những điều gì?", a: "A", options: { A: "Ý nghĩa và tầm quan trọng của công tác phòng ngừa chấn thương, các nguyên nhân gây ra chấn thương trong môn thể thao chuyên sâu của mình và các phương pháp phòng ngừa, bảo hiểm và tự bảo hiểm.", B: "Luôn nghe theo sự chỉ đạo của huấn luyện viên.", C: "Cách ăn uống, ngủ nghi, tắm và sinh hoạt hợp lý.", D: "Biết được nguyên nhân gây ra chấn thương để phòng tránh khi tập luyện." } },
+        { q: "Để phòng tránh chấn thương, người tập cần hiểu rõ mối quan hệ giữa các nội dung trong huấn luyện, đó là những nội dung nào?", a: "B", options: { A: "Kỹ thuật và thể lực.", B: "Kỹ thuật, chiến thuật, tố chất thể lực, đạo đức.", C: "Kỹ thuật và chiến thuật.", D: "Đạo đức, trí tuệ và nghị lực." } },
+        { q: "Phương pháp nào dưới đây là phương pháp để phòng tránh chấn thương?", a: "C", options: { A: "Để bụng rỗng khi tham gia tập luyện TDTT.", B: "Luôn uống 2L – 3L nước mỗi ngày.", C: "Khởi động tốt trước khi tham gia các buổi tập luyện và thi đấu.", D: "Thực hiện tốt các chế độ ăn, uống, ngủ và nghỉ hằng ngày." } },
+        { q: "Nguyên tắc huấn luyện nào cần đặc biệt tuân thủ để phòng tránh chấn thương?", a: "A", options: { A: "Nguyên tắc tăng tiến.", B: "Nguyên tắc trực quan.", C: "Nguyên tắc tự giác, tích cực.", D: "Nguyên tắc tập từ khó đến dễ." } },
+        { q: "Nhằm phòng tránh chấn thương cho người tập, người cán bộ phụ trách về y học thể thao có nhiệm vụ gì?", a: "A", options: { A: "Kiểm tra sức khỏe thường xuyên, chẩn đoán, xác định loại trừ các yếu tố nguy cơ gây ra chấn thương cho người tập.", B: "Chữa trị cho người tập khi gặp chấn thương.", C: "Tìm hiểu những nguyên nhân gây ra chấn thương trong quá trình tập luyện.", D: "Kiểm tra sức khỏe thường xuyên và kê đơn những loại thuốc có tác dụng kích thích cơ." } },
+        { q: "Để buổi tập đạt hiệu quả cao nhất, phòng tránh được chấn thương cho người tập, người hướng dẫn tập luyện cần đến lớp trước để làm gì?", a: "B", options: { A: "Điểm danh người tập.", B: "Chuẩn bị, kiểm tra sân bãi, dụng cụ.", C: "Đôn đốc công tác dọn vệ sinh sân tập.", D: "Chuẩn bị tâm lý trước để sẵn sàng đi vào huấn luyện." } }
+    ];
+
+    const quizForm = document.getElementById('quiz-form');
+    const scoreDisplay = document.getElementById('score');
+    const resetButton = document.getElementById('reset-button');
+    
+    let totalCorrectAnswers = 0;
+    const answeredQuestions = new Set(); 
+
+    // Hàm cập nhật điểm
+    function updateScore() {
+        scoreDisplay.innerHTML = `Tổng số câu trả lời đúng: **${totalCorrectAnswers}/${quizData.length}**`;
+    }
+
+    // Hàm kiểm tra đáp án cho một câu hỏi cụ thể
+    function checkSingleAnswer(questionNum, selectedValue) {
+        const index = questionNum - 1;
+        const item = quizData[index];
+        const block = document.getElementById(`q-${questionNum}`);
+        const resultMessage = block.querySelector('.result-message');
+        const optionsLabels = block.querySelectorAll('.options label');
+        
+        // Loại bỏ highlight cũ
+        optionsLabels.forEach(label => {
+            label.classList.remove('correct', 'incorrect');
+        });
+        
+        // Cập nhật điểm và đánh dấu đã trả lời (Chỉ thực hiện lần đầu)
+        if (!answeredQuestions.has(questionNum)) {
+            answeredQuestions.add(questionNum);
+            if (selectedValue === item.a) {
+                totalCorrectAnswers++;
+            }
+            updateScore();
+        }
+        
+        // Vô hiệu hóa block sau khi trả lời
+        block.classList.add('disabled-block');
+
+        // Hiển thị kết quả
+        resultMessage.style.display = 'block';
+
+        const selectedLabel = document.querySelector(`#q${questionNum}-${selectedValue}`).closest('label');
+        const correctAnswerLabel = document.querySelector(`#q${questionNum}-${item.a}`).closest('label');
+
+        if (selectedValue === item.a) {
+            selectedLabel.classList.add('correct');
+            resultMessage.className = 'result-message correct-text';
+            resultMessage.innerHTML = '✅ **ĐÚNG!**';
+        } else {
+            selectedLabel.classList.add('incorrect');
+            correctAnswerLabel.classList.add('correct'); // Highlight đáp án đúng
+            resultMessage.className = 'result-message incorrect-text';
+            resultMessage.innerHTML = `❌ **SAI!**`;
+        }
+
+        // Chú thích đáp án đúng
+        const correctText = item.options[item.a];
+        const correctDisplay = document.createElement('div');
+        correctDisplay.className = 'correct-answer-display';
+        // Xóa nội dung cũ
+        resultMessage.querySelectorAll('.correct-answer-display').forEach(e => e.remove());
+        
+        correctDisplay.innerHTML = `Đáp án đúng là **${item.a}**: ${correctText}`;
+        resultMessage.appendChild(correctDisplay);
+    }
+
+    // Hàm tạo giao diện câu hỏi (chức năng này không thay đổi)
+    function renderQuiz() {
+        quizData.forEach((item, index) => {
+            const questionNum = index + 1;
+            
+            // Tìm block cũ hoặc tạo mới nếu chưa tồn tại (Dùng để reset)
+            let block = document.getElementById(`q-${questionNum}`);
+            if (!block) {
+                block = document.createElement('div');
+                block.className = 'question-block';
+                block.id = `q-${questionNum}`;
+                quizForm.appendChild(block);
+
+                // Tạo nội dung câu hỏi
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = `Câu ${questionNum}: ${item.q.trim()}`;
+                block.appendChild(questionText);
+
+                // Tạo các tùy chọn
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                Object.keys(item.options).forEach(key => {
+                    const optionId = `q${questionNum}-${key}`;
+                    const label = document.createElement('label');
+                    label.setAttribute('for', optionId);
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question${questionNum}`;
+                    input.value = key;
+                    input.id = optionId;
+                    
+                    // Gắn sự kiện kiểm tra trực tiếp
+                    label.onclick = function() {
+                        if (!answeredQuestions.has(questionNum)) {
+                            input.checked = true;
+                            checkSingleAnswer(questionNum, key);
+                        }
+                    };
+
+                    const textNode = document.createTextNode(` ${key}. ${item.options[key]}`);
+                    
+                    label.appendChild(input);
+                    label.appendChild(textNode);
+                    optionsDiv.appendChild(label);
+                });
+
+                block.appendChild(optionsDiv);
+                
+                // Khối hiển thị kết quả
+                const resultMessage = document.createElement('div');
+                resultMessage.className = 'result-message';
+                block.appendChild(resultMessage);
+            }
+            
+            // Luôn gọi hàm reset cho tất cả các block khi render (giúp tái sử dụng code)
+            resetQuestionBlock(block, questionNum);
+        });
+        updateScore(); 
+    }
+    
+    // Hàm reset trạng thái của một câu hỏi
+    function resetQuestionBlock(block, questionNum) {
+        // 1. Bỏ chọn tất cả radio button
+        const radioButtons = block.querySelectorAll(`input[name="question${questionNum}"]`);
+        radioButtons.forEach(radio => radio.checked = false);
+
+        // 2. Xóa highlight màu
+        const optionsLabels = block.querySelectorAll('.options label');
+        optionsLabels.forEach(label => {
+            label.classList.remove('correct', 'incorrect');
+        });
+
+        // 3. Ẩn thông báo và xóa nội dung
+        const resultMessage = block.querySelector('.result-message');
+        resultMessage.style.display = 'none';
+        resultMessage.innerHTML = '';
+        
+        // 4. Kích hoạt lại block
+        block.classList.remove('disabled-block');
+    }
+    
+    // Hàm chính để làm lại bài
+    function resetQuiz() {
+        // Reset biến đếm
+        totalCorrectAnswers = 0;
+        answeredQuestions.clear();
+        
+        // Reset trạng thái từng câu hỏi
+        quizData.forEach((item, index) => {
+            const questionNum = index + 1;
+            const block = document.getElementById(`q-${questionNum}`);
+            if (block) {
+                resetQuestionBlock(block, questionNum);
+            }
+        });
+        
+        // Cập nhật điểm
+        updateScore();
+        alert('Đã làm lại bài. Bạn có thể bắt đầu chọn đáp án mới.');
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderQuiz();
+        resetButton.addEventListener('click', resetQuiz); // Gắn sự kiện cho nút Làm lại
+    });
+
+</script>
+
+</body>
+</html>
